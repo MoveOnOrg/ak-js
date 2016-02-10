@@ -11,7 +11,7 @@ $(document).ready(function() {
     if ($splitTotal.length > 0) {
       donationAmount = parseFloat($splitTotal.val());
     }
-    if (donationAmount >= 1000) {
+    if (donationAmount >= 250) {
       return confirmLargeDonation(donationAmount);
     }
     return true;
