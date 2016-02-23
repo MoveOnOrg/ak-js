@@ -25,14 +25,16 @@ $(document).ready(function() {
  */
 function confirmLargeDonation(donationAmount) {
 
-  if ($('form button[type=submit]').data('confirmed')) {
+  if ($('form').data('confirmed')) {
     return true;
   }
 
   $('#confirm-big-donation .donation-amount').text(donationAmount);
   $('#confirm-big-donation .btn.yes').click(function() {
+    $('#confirm-big-donation').on('hidden.bs.modal', function (e) {
+      $('form').data('confirmed', true).trigger('submit');
+    });
     $('#confirm-big-donation').modal('hide');
-    $('form').data('confirmed', true).trigger('submit');
   });
   $('#confirm-big-donation').modal();
 
