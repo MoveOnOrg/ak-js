@@ -18,6 +18,10 @@ $(document).ready(function() {
     }
   });
 
+  $('form input').keyup(function() {
+    $('form').data('confirmed', false);
+  });
+
 });
 
 /**
