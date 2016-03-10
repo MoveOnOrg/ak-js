@@ -6,8 +6,13 @@ $(document).ready(function() {
    */
   $('form').data('confirmed', false).submit(function(event) {
     var $splitTotal = $('#total-to-split');
-    var $other = $('#amount_other_field');
-    var donationAmount = parseFloat($other.val());
+    var donationAmount = 0;
+    var amountChecked = $('input:radio[name=amount]:checked').val();
+    if (amountChecked.length > 0) {
+        donationAmount = parseFloat(amountChecked);
+    } else {
+        donationAmount = parseFloat($('#amount_other_field').val());
+    }
     if ($splitTotal.length > 0) {
       donationAmount = parseFloat($splitTotal.val());
     }
