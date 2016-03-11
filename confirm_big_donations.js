@@ -7,9 +7,9 @@ $(document).ready(function() {
   $('form').data('confirmed', false).submit(function(event) {
     var $splitTotal = $('#total-to-split');
     var donationAmount = 0;
-    var amountChecked = $('input:radio[name=amount]:checked').val();
+    var amountChecked = $('input:radio[name=amount]:checked');
     if (amountChecked.length > 0) {
-        donationAmount = parseFloat(amountChecked);
+        donationAmount = parseFloat(amountChecked.val());
     } else {
         donationAmount = parseFloat($('#amount_other_field').val());
     }
