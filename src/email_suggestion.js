@@ -22,6 +22,8 @@ All options supported:
 
   email_suggestion_selector - CSS selector of above
 
+  validation_error_class - defaults to set the color
+
   string - string used to prompt the user, default is "<br>Did you mean <a onclick="EmailSuggestion.ok()">{{email}}</a>?"
 
 */
@@ -58,11 +60,21 @@ var EmailSuggestion = {
         } else if (args['email_suggestion_selector']) {
             this.email_suggestion_field = $(args['email_suggestion_selector']);
         }
+
+        if (args['validation_error_class']) {
+           this.validation_error_class = args['validation_error_class'];
+        }
         if (!this.email_suggestion_field || !this.email_suggestion_field.length) {
             this.email_field.after('<span id="auto_email_suggestion" class="email_suggestion hidden"></span>');
             this.email_suggestion_field = $('#auto_email_suggestion');
         }
-
+        this.email_field.keypress(function() {
+            if (!/.*@.*\.\w+/.test($(this).val())) {
+              EmailSuggestion.coloron();
+            } else {
+              EmailSuggestion.coloroff();
+            }
+        });
         this.email_field.blur(function() {
             $(this).mailcheck({
                 domains: domains,
@@ -85,10 +97,18 @@ var EmailSuggestion = {
         this.coloroff();
     },
     coloron: function() {
+      if (this.validation_error_class) {
+        this.email_field.addClass(this.validation_error_class);
+      } else {
         this.email_field.attr( 'style', 'color:#c22326;')
+      }
     },
     coloroff: function() {
+      if (this.validation_error_class) {
+        this.email_field.removeClass(this.validation_error_class);
+      } else {
         this.email_field.attr( 'style', 'color:#555555;')
+      }
     }
 };
 
