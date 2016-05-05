@@ -5,7 +5,7 @@ $(document).ready(function() {
       if (result.valid) {
         $('#card_num_box .cc-icons .icon-' + result.card_type.name).addClass('matched');
       }
-      if (result.valid || $('#card_num').length == 0) {
+      if (result.valid || $('#card_num').val().length == 0) {
         $('#card_num_box').removeClass('has-error');
       }
       else {
