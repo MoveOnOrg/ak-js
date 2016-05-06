@@ -8,7 +8,8 @@ $(document).ready(function() {
       var $info = $('#employer-occupation-info');
       if ($this.is(':checked')) {
         $info.addClass('hidden');
-        $info.find('input').val('Retired');
+        $info.find('#action_employer').val('None');
+        $info.find('#action_occupation').val('Not employed');
       }
       else {
         $info.removeClass('hidden');
