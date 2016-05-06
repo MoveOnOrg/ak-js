@@ -1,6 +1,5 @@
 $(document).ready(function() {
 
-  var $checkboxRow = $('<div class="form-group row"><div class="col-md-4 text-right"></div></div>');
   var $checkboxCol = $('<div class="col-md-8 checkbox"></div>');
   var $checkbox = $('<input type="checkbox" name="retired" />')
     .click(function() {
@@ -22,8 +21,6 @@ $(document).ready(function() {
     });
   $checkboxLabel.prepend($checkbox).append($checkboxSpan);
   $checkboxCol.append($checkboxLabel);
-  $checkboxRow
-    .append($checkboxCol)
-    .insertBefore('#employer-occupation-info');
+  $('#retired-checkbox').append($checkboxCol);
 
 });
