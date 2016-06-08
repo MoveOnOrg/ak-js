@@ -1,12 +1,12 @@
 const gulp = require('gulp');
 const uglify = require('gulp-uglify');
-const rename = require("gulp-rename");
+const concat = require("gulp-concat");
 
 gulp.task('default', () => {
   return gulp.src('./src/*.js')
+    .pipe(concat('ak-js.js'))
+    .pipe(gulp.dest('./build/'))
     .pipe(uglify())
-    .pipe(rename((path) => {
-      path.extname = '.min.js'
-    }))
-    .pipe(gulp.dest('.'));
+    .pipe(concat('ak-js.min.js'))
+    .pipe(gulp.dest('./build/'));
 });
