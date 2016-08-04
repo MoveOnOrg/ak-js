@@ -115,5 +115,9 @@ $(document).ready(function() {
     $('input[type="submit"]').click(setFormAction);
     $('.jump-link').click(handleJumpLink);
     $('input.toggle').click(handleListChanged);
+    $('.add-more-link').shorten({
+      moreText: 'see more',
+      lessText: '',
+    });
     updateConfirmationMessage();
 });
