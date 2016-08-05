@@ -116,8 +116,11 @@ $(document).ready(function() {
     $('.jump-link').click(handleJumpLink);
     $('input.toggle').click(handleListChanged);
     $('.add-more-link').shorten({
-      moreText: 'see more',
-      lessText: '',
+        moreText: 'see more',
+        lessText: '',
+    });
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
     });
     updateConfirmationMessage();
 });
