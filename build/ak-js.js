@@ -379,6 +379,133 @@ window.onerror = function(errorMessage) {
   window.jsErrors[window.jsErrors.length] = errorMessage;
 }
 
+// Prepare toglle-all checkboxes
+function toggleAll() {
+    $(this)
+        .closest('form')
+        .find('input.toggle')
+        .attr('checked', this.checked);
+}
+
+// Update "N attendee(s)" in e-mail form
+function handleListChanged() {
+    var $form = $(this).closest('form');
+    var to_count = $('input.toggle:checked').length;
+    // Mailing all recipients if none are checked
+    if (to_count == 0) {
+        to_count = $('input.toggle').length;
+    }
+    else {
+        $form.find('.check-recipients-help').hide();
+    }
+    $form.find('.to-count').text(to_count);
+}
+// E-mail button
+function showEmailForm() {
+    var $form = $(this).closest('form');
+    $form.find('.roster-controls').slideUp('fast');
+    $form.find('.contact-form').slideDown('fast');
+    return false;
+}
+
+// "E-mail attendee", "e-mail cohost", "invite friends" links
+// Unhide if needed and fake :target on IE
+function handleJumpLink() {
+    var targetEl;
+    if ( this.id == 'email-cohosts-link' )
+        targetEl = $('.contact-cohosts');
+    else if ( this.id == 'email-attendees-link' )
+        targetEl = $('.contact-attendees');
+    else if ( this.id == 'invite-friends-link' )
+        targetEl = $('#taf');
+    // Unhide e-mail form if needed
+    if ( /^email-/.test(this.id) ) {
+        var emailButton = targetEl.closest('form').find('input[type="submit"].email');
+        showEmailForm.apply(emailButton, []);
+    }
+    // Highlight
+    targetEl.addClass('target');
+    // Allow jump to #foo to happen
+    return true;
+}
+
+// Confirm a click
+function confirmSubmit() {
+    return confirm($(this).attr('data-confirm-message'));
+}
+
+// Stash the name of the submit button in the 'action' form field
+// (helps the validation JS see which kind of action to validate for)
+function setFormAction() {
+    var formEl = $(this).closest('form')[0];
+    if ( !formEl && !formEl.action ) return;
+    formEl.action.value = this.name;
+}
+
+// Check for required fields for remove/promote/demote/e-mail
+function validateRoster(form) {
+    var action = form.action.value;
+    // Nobody to remove/promote/demote
+    if ( /(change-role|remove)/.test(action)
+         && !($(form).find('input.toggle:checked').length) )
+        actionkit.errors['user_id:missing'] =
+            actionkit.forms.errorMessage('event_roster_user_ids:missing');
+    // No message to send
+    if ( action == 'send_email'
+         && !form.body.value )
+        actionkit.errors['body:missing'] =
+            actionkit.forms.errorMessage('event_contact_body:missing');
+}
+
+// Confirm removing folks
+function confirmRoster(form) {
+    var action = form.action.value;
+    var actionButton = $(form).find('input[name="' + action + '"]');
+    var confirmMessage = actionButton.attr('confirm-message');
+    if ( confirmMessage )
+        return confirm(confirmMessage);
+    else
+        return true;
+}
+
+// Click anywhere in row to check/uncheck attendee
+function toggleRow(e) {
+    var toggleEl = $(this).closest('tr').find('.toggle')[0];
+    if (toggleEl) {
+        toggleEl.checked = !toggleEl.checked;
+    }
+    return false;
+}
+
+// Update the confirmation div from a different page
+function updateConfirmationMessage() {
+    for (var key in actionkit.args) {
+        if (key.indexOf(':') > 0 && actionkit.args[key] == 1) {
+            $('#ak-confirmation').text(actionkit.forms.text['error_' + key]);
+            $('#ak-confirmation').show();
+        }
+    }
+}
+
+$(document).ready(function() {
+    $('.if-js').show();
+    $('a[data-confirm-message]').click(confirmSubmit);
+    $('input.toggle-all').click(toggleAll);
+    $('.event-roster td:not(.toggle-col)').click(toggleRow);
+    $('input[type="submit"].email').click(showEmailForm);
+    $('input[type="submit"]').click(setFormAction);
+    $('.jump-link').click(handleJumpLink);
+    $('input.toggle').click(handleListChanged);
+    $('.add-more-link').shorten({
+        moreText: 'see more',
+        lessText: '',
+    });
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+    updateConfirmationMessage();
+});
+
 // From http://snipplr.com/view/43646/prepopulate-form-with-values-from-querystring/
 $(document).ready(function() {
 
@@ -598,6 +725,158 @@ var Kicksend = {
     }
   }
 };
+
+/*
+ * jQuery Shorten plugin 1.1.0
+ *
+ * Copyright (c) 2014 Viral Patel
+ * http://viralpatel.net
+ *
+ * Licensed under the MIT license:
+ *   http://www.opensource.org/licenses/mit-license.php
+ */
+
+/*
+** updated by Jeff Richardson
+** Updated to use strict,
+** IE 7 has a "bug" It is returning undefined when trying to reference string characters in this format
+** content[i]. IE 7 allows content.charAt(i) This works fine in all modern browsers.
+** I've also added brackets where they weren't added just for readability (mostly for me).
+*/
+
+(function($) {
+    $.fn.shorten = function(settings) {
+        "use strict";
+
+        var config = {
+            showChars: 100,
+            minHideChars: 10,
+            ellipsesText: "...",
+            moreText: "more",
+            lessText: "less",
+            onLess: function() {},
+            onMore: function() {},
+            errMsg: null,
+            force: false
+        };
+
+        if (settings) {
+            $.extend(config, settings);
+        }
+
+        if ($(this).data('jquery.shorten') && !config.force) {
+            return false;
+        }
+        $(this).data('jquery.shorten', true);
+
+        $(document).off("click", '.morelink');
+
+        $(document).on({
+            click: function() {
+
+                var $this = $(this);
+                if ($this.hasClass('less')) {
+                    $this.removeClass('less');
+                    $this.html(config.moreText);
+                    $this.parent().prev().animate({'height':'0'+'%'}, function () { $this.parent().prev().prev().show(); }).hide('fast', function() {
+                        config.onLess();
+                      });
+
+                } else {
+                    $this.addClass('less');
+                    $this.html(config.lessText);
+                    $this.parent().prev().animate({'height':'100'+'%'}, function () { $this.parent().prev().prev().hide(); }).show('fast', function() {
+                        config.onMore();
+                      });
+                }
+                return false;
+            }
+        }, '.morelink');
+
+        return this.each(function() {
+            var $this = $(this);
+
+            var content = $this.html();
+            var contentlen = $this.text().length;
+            if (contentlen > config.showChars + config.minHideChars) {
+                var c = content.substr(0, config.showChars);
+                if (c.indexOf('<') >= 0) // If there's HTML don't want to cut it
+                {
+                    var inTag = false; // I'm in a tag?
+                    var bag = ''; // Put the characters to be shown here
+                    var countChars = 0; // Current bag size
+                    var openTags = []; // Stack for opened tags, so I can close them later
+                    var tagName = null;
+
+                    for (var i = 0, r = 0; r <= config.showChars; i++) {
+                        if (content[i] == '<' && !inTag) {
+                            inTag = true;
+
+                            // This could be "tag" or "/tag"
+                            tagName = content.substring(i + 1, content.indexOf('>', i));
+
+                            // If its a closing tag
+                            if (tagName[0] == '/') {
+
+
+                                if (tagName != '/' + openTags[0]) {
+                                    config.errMsg = 'ERROR en HTML: the top of the stack should be the tag that closes';
+                                } else {
+                                    openTags.shift(); // Pops the last tag from the open tag stack (the tag is closed in the retult HTML!)
+                                }
+
+                            } else {
+                                // There are some nasty tags that don't have a close tag like <br/>
+                                if (tagName.toLowerCase() != 'br') {
+                                    openTags.unshift(tagName); // Add to start the name of the tag that opens
+                                }
+                            }
+                        }
+                        if (inTag && content[i] == '>') {
+                            inTag = false;
+                        }
+
+                        if (inTag) { bag += content.charAt(i); } // Add tag name chars to the result
+                        else {
+                            r++;
+                            if (countChars <= config.showChars) {
+                                bag += content.charAt(i); // Fix to ie 7 not allowing you to reference string characters using the []
+                                countChars++;
+                            } else // Now I have the characters needed
+                            {
+                                if (openTags.length > 0) // I have unclosed tags
+                                {
+                                    //console.log('They were open tags');
+                                    //console.log(openTags);
+                                    for (j = 0; j < openTags.length; j++) {
+                                        //console.log('Cierro tag ' + openTags[j]);
+                                        bag += '</' + openTags[j] + '>'; // Close all tags that were opened
+
+                                        // You could shift the tag from the stack to check if you end with an empty stack, that means you have closed all open tags
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    c = $('<div/>').html(bag + '<span class="ellip">' + config.ellipsesText + '</span>').html();
+                }else{
+                    c+=config.ellipsesText;
+                }
+
+                var html = '<div class="shortcontent">' + c +
+                    '</div><div class="allcontent">' + content +
+                    '</div><span><a href="javascript://nop/" class="morelink">' + config.moreText + '</a></span>';
+
+                $this.html(html);
+                $this.find(".allcontent").hide(); // Hide all text
+                $('.shortcontent p:last', $this).css('margin-bottom', 0); //Remove bottom margin on last paragraph as it's likely shortened
+            }
+        });
+
+    };
+
+})(jQuery);
 
 function shuffle(array) {
   var currentIndex = array.length, temporaryValue, randomIndex ;
