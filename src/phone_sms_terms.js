@@ -39,13 +39,17 @@ var SMS_SUBSCRIBE_DIV = '#id_subscribe_sms';
     // this depends on running AFTER actoinkit.initForm()
     // This js file should be loaded after that in wrapper.html
     // It doesn't matter if init/setupForm is run multiple times, because this hacked the dom element itself
+
     window.actionkit.form.email = false;
+
     //HACK2: monkeypatch/filter actionkit.forms.required() -- neither one is sufficient by itself
     var oldrequired = actionkit.forms.required;
     actionkit.forms.required = function() {
       var required_fields = oldrequired();
       return $(required_fields).filter(function() {return (this != 'email')});
     }
+    //HACK3: and remove the form attribute
+    $('#id_email').removeAttr('required');
 
   }
 })();
