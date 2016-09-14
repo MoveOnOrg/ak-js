@@ -2142,12 +2142,12 @@ var SMS_SUBSCRIBE_DIV = '#id_subscribe_sms';
         }
       });
     }
-    //HACK: monkeypatch/filter actionkit.forms.required()
-    var oldrequired = actionkit.forms.required;
-    actionkit.forms.required = function() {
-      var required_fields = oldrequired();
-      return $(required_fields).filter(function() {return (this != 'email')});
-    }
+    //HACK: change actionkit.forms.email to bypass actionkit.forms.required() email test
+    // note, this is actually messing with the dom-walking because .form IS the dom element
+    // this depends on running AFTER actoinkit.initForm()
+    // This js file should be loaded after that in wrapper.html
+    // It doesn't matter if init/setupForm is run multiple times, because this hacked the dom element itself
+    window.actionkit.form.email = false;
   }
 })();
 
@@ -2170,10 +2170,12 @@ $('input[name=phone],input[name=mobile_phone]')
 
 //onSUBMIT
 $('form[name=act]').on('actionkitbeforevalidation', function() {
+  if (window.console) {console.log('actionkitbefore validation! (mobile check)');}
   var mobile = $('input[name=phone],input[name=mobile_phone]').val().replace(/\D/g, '');
   var mobile_subscribe = $('#id_sms_subscribed', SMS_SUBSCRIBE_DIV).prop('checked');
 
   if (mobile_subscribe && mobile && mobile.length >= 10) {
+    if (window.console) {console.log('in mobile pathway, before validation');}
     if ($('#id_email').val() === '') {
       $('#id_suppress_subscribe').val('1');
       $('#id_email').val(mobile+'-smssubscriber@example.com');
@@ -2183,7 +2185,7 @@ $('form[name=act]').on('actionkitbeforevalidation', function() {
     $('#id_sms_subscribed').val('sms_subscribed');
     $('#id_sms_termsandconditions').val('sms_termsandconditions');
     $('#id_robodial_termsandconditions').val('yes');
-  } 
+  }
 });
 
 function shuffle(array) {
