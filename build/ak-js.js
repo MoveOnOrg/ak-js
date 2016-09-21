@@ -2200,6 +2200,25 @@ $('form[name=act]').on('actionkitbeforevalidation', function() {
   }
 });
 
+//onSUBMIT for outside forms
+$('form.external-ak').on('submit', function() {
+  var mobile = $('input[name=phone],input[name=mobile_phone]').val().replace(/\D/g, '');
+  var mobile_subscribe = $('#id_sms_subscribed', SMS_SUBSCRIBE_DIV).prop('checked');
+
+  if (mobile_subscribe && mobile && mobile.length >= 10) {
+    if ($('#id_email').val() === '') {
+      $('#id_suppress_subscribe').val('1');
+      $('#id_email').val(mobile+'-smssubscriber@example.com');
+      $('#id_email_box').hide();
+    }
+
+    $('#id_sms_subscribed').val('sms_subscribed');
+    $('#id_action_mobilesubscribe').val('1');
+    $('#id_sms_termsandconditions').val('sms_termsandconditions');
+    $('#id_robodial_termsandconditions').val('yes');
+  }
+});
+
 function shuffle(array) {
   var currentIndex = array.length, temporaryValue, randomIndex ;
 
