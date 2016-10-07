@@ -2212,6 +2212,7 @@ $('form.external-ak').on('submit', function() {
       $('#id_email_box').hide();
     }
 
+    $('#id_phone_type').val('mobile');
     $('#id_sms_subscribed').val('sms_subscribed');
     $('#id_action_mobilesubscribe').val('1');
     $('#id_sms_termsandconditions').val('sms_termsandconditions');
