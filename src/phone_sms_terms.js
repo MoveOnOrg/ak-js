@@ -74,8 +74,6 @@ $('input[name=phone],input[name=mobile_phone]')
 //onSUBMIT
 $('form[name=act]').on('actionkitbeforevalidation', function() {
   if (window.console) {console.log('actionkitbefore validation! (mobile check)');}
-  var mobileFields = ('input[name=phone],input[name=mobile_phone]');
-  if (mobileFields.length > 0) {
   var mobile = $('input[name=phone],input[name=mobile_phone]').val();
   var mobile_subscribe = $('#id_sms_subscribed', SMS_SUBSCRIBE_DIV).prop('checked');
   if (typeof mobile != 'string') {
