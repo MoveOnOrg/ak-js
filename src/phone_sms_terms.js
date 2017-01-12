@@ -74,8 +74,14 @@ $('input[name=phone],input[name=mobile_phone]')
 //onSUBMIT
 $('form[name=act]').on('actionkitbeforevalidation', function() {
   if (window.console) {console.log('actionkitbefore validation! (mobile check)');}
-  var mobile = $('input[name=phone],input[name=mobile_phone]').val().replace(/\D/g, '');
+  var mobileFields = ('input[name=phone],input[name=mobile_phone]');
+  if (mobileFields.length > 0) {
+  var mobile = $('input[name=phone],input[name=mobile_phone]').val();
   var mobile_subscribe = $('#id_sms_subscribed', SMS_SUBSCRIBE_DIV).prop('checked');
+  if (typeof mobile != 'string') {
+    mobile = '';
+  }
+  mobile = mobile.replace(/\D/g, '');
 
   if (mobile_subscribe && mobile && mobile.length >= 10) {
     if (window.console) {console.log('in mobile pathway, before validation');}
