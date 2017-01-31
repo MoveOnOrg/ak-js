@@ -2182,8 +2182,12 @@ $('input[name=phone],input[name=mobile_phone]')
 //onSUBMIT
 $('form[name=act]').on('actionkitbeforevalidation', function() {
   if (window.console) {console.log('actionkitbefore validation! (mobile check)');}
-  var mobile = $('input[name=phone],input[name=mobile_phone]').val().replace(/\D/g, '');
+  var mobile = $('input[name=phone],input[name=mobile_phone]').val();
   var mobile_subscribe = $('#id_sms_subscribed', SMS_SUBSCRIBE_DIV).prop('checked');
+  if (typeof mobile != 'string') {
+    mobile = '';
+  }
+  mobile = mobile.replace(/\D/g, '');
 
   if (mobile_subscribe && mobile && mobile.length >= 10) {
     if (window.console) {console.log('in mobile pathway, before validation');}
@@ -2284,6 +2288,63 @@ $(document).ready(function() {
 
 });
 
+
+$(document).ready(function(){
+
+  if($("body").hasClass("mobile-survey") && $(".form-section").length > 0 && !isScrolledIntoView("[data-viewable]")) {
+    makeFormButton();
+  }
+
+});
+
+function makeFormButton() {
+
+  var surveyButtonText = $('#take-this-survey-text').text()  
+  var $t = $("body").hasClass("survey-page") ? surveyButtonText: $("button:submit").text();
+
+  if($("body").hasClass("survey-page") && $(".form-section").length > 0) {
+    $("body").addClass("has-page-footer");
+
+    var $pageFooter = $("<div class='page-footer page-footer--toggle'></div>");
+
+    $pageFooter.appendTo("body");
+
+    $formToggle = $("<a href='#' class='btn-toggle toggle-form'>" + $t + "</a>").appendTo($pageFooter);
+    $formToggle.click(function(e){
+      e.preventDefault();
+      $('html, body').animate({
+        scrollTop: ($("[data-viewable]").offset().top - 60)
+      }, 200);
+    });
+
+    $(window).scroll(function() {
+      checkViewable($("[data-viewable]"));
+    });
+    checkViewable($("[data-viewable]"));
+
+  }
+}
+
+function checkViewable(elem) {
+  
+  var $viewable = isScrolledIntoView(elem);
+
+  $("body").removeClass("form-viewable");
+  if($viewable) {
+    $("body").addClass("form-viewable");
+  }
+}
+
+function isScrolledIntoView(elem)
+{
+    var docViewTop = $(window).scrollTop();
+    var docViewBottom = docViewTop + $(window).height();
+
+    var elemTop = $(elem).offset().top;
+    var elemBottom = elemTop + $(elem).height();
+
+    return (docViewBottom >= elemTop && docViewTop <= elemBottom);
+}
 $(document).ready(function() {
   if ($('#card_num').length > 0) {
     $('#card_num').validateCreditCard(function(result) {
