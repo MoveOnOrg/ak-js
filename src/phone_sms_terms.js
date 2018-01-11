@@ -20,6 +20,9 @@
 
 var SMS_SUBSCRIBE_DIV = '#id_subscribe_sms';
 
+var params = new URLSearchParams(window.location.search);
+var suppress_param = params.get('s');
+
 //onLOAD
 (function() {
   var phonemobile = ($(SMS_SUBSCRIBE_DIV).attr('data-phonemobile') || '');
@@ -55,7 +58,7 @@ var SMS_SUBSCRIBE_DIV = '#id_subscribe_sms';
 })();
 
 var mobilePhoneUpdate = function() {
-  if ($(this).val().replace(/\D/g, '').length >= 10) {
+  if ($(this).val().replace(/\D/g, '').length >= 10 && suppress_param != 0) {
     var phonemobile = ($(SMS_SUBSCRIBE_DIV).attr('data-phonemobile') || '');
     if (/opt-out/.test(phonemobile)) {
       $('#id_sms_subscribed').prop('checked', true);
