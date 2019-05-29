@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/MoveOnOrg/ak-js#readme",
   "devDependencies": {
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-concat": "^2.6.0",
     "gulp-uglify": "^1.5.3"
   }
