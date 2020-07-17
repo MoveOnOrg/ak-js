@@ -27,7 +27,7 @@ function makeFormButton() {
       }, 200);
     });
 
-    $(window).scroll(function() {
+    $(window).on('scroll', function() {
       checkViewable($("[data-viewable]"));
     });
     checkViewable($("[data-viewable]"));
