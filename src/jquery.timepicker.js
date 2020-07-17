@@ -93,7 +93,7 @@
 
 			if (_hideKeyboard(self)) {
 				// block the keyboard on mobile devices
-				self.on('blur', ());
+				self.trigger('blur');
 			}
 
 			var list = self.data('timepicker-list');
@@ -200,7 +200,7 @@
 			var settings = self.data('timepicker-settings');
 
 			if (settings && settings.useSelect) {
-				self.on('blur', ());
+				self.trigger('blur');
 			}
 
 			$('.ui-timepicker-wrapper').each(function() {
