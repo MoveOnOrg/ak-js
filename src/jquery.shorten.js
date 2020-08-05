@@ -131,7 +131,7 @@
                             }
                         }
                     }
-                    c = $('<div/>').html(bag + '<span class="ellip">' + config.ellipsesText + '</span>').html();
+                    c = $('<div>').html(bag + '<span class="ellip">' + config.ellipsesText + '</span></div>').html();
                 }else{
                     c+=config.ellipsesText;
                 }
