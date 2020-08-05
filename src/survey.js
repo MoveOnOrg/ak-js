@@ -20,14 +20,14 @@ function makeFormButton() {
     $pageFooter.appendTo("body");
 
     $formToggle = $("<a href='#' class='btn-toggle toggle-form'>" + $t + "</a>").appendTo($pageFooter);
-    $formToggle.click(function(e){
+    $formToggle.on('click', function(e){
       e.preventDefault();
       $('html, body').animate({
         scrollTop: ($("[data-viewable]").offset().top - 60)
       }, 200);
     });
 
-    $(window).scroll(function() {
+    $(window).on('scroll', function() {
       checkViewable($("[data-viewable]"));
     });
     checkViewable($("[data-viewable]"));

@@ -68,14 +68,14 @@ var EmailSuggestion = {
             this.email_field.after('<span id="auto_email_suggestion" class="email_suggestion hidden"></span>');
             this.email_suggestion_field = $('#auto_email_suggestion');
         }
-        this.email_field.keypress(function() {
+        this.email_field.on('keypress', function() {
             if (!/.*@.*\.\w+/.test($(this).val())) {
               EmailSuggestion.coloron();
             } else {
               EmailSuggestion.coloroff();
             }
         });
-        this.email_field.blur(function() {
+        this.email_field.on('blur', function() {
             $(this).mailcheck({
                 domains: domains,
                 suggested: function(element, suggestion) {

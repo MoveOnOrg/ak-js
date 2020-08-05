@@ -108,13 +108,13 @@ function updateConfirmationMessage() {
 
 $(document).ready(function() {
     $('.if-js').show();
-    $('a[data-confirm-message]').click(confirmSubmit);
-    $('input.toggle-all').click(toggleAll);
-    $('.event-roster td:not(.toggle-col)').click(toggleRow);
-    $('input[type="submit"].email').click(showEmailForm);
-    $('input[type="submit"]').click(setFormAction);
-    $('.jump-link').click(handleJumpLink);
-    $('input.toggle').click(handleListChanged);
+    $('a[data-confirm-message]').on('click', confirmSubmit);
+    $('input.toggle-all').on('click', toggleAll);
+    $('.event-roster td:not(.toggle-col)').on('click', toggleRow);
+    $('input[type="submit"].email').on('click', showEmailForm);
+    $('input[type="submit"]').on('click', setFormAction);
+    $('.jump-link').on('click', handleJumpLink);
+    $('input.toggle').on('click', handleListChanged);
     $('.add-more-link').shorten({
         moreText: 'see more',
         lessText: '',

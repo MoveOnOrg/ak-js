@@ -2,7 +2,7 @@ $(document).ready(function() {
 
   var $checkboxCol = $('<div class="col-md-8 checkbox"></div>');
   var $checkbox = $('<input type="checkbox" name="retired" />')
-    .click(function() {
+    .on('click', function() {
       var $this = $(this);
       var $info = $('#employer-occupation-info');
       if ($this.is(':checked')) {
@@ -16,8 +16,8 @@ $(document).ready(function() {
     });
   var $checkboxLabel = $('<label for="retired"> </label>');
   var $checkboxSpan = $('<span>I am retired or unemployed</span>')
-    .click(function() {
-      $('input[name=retired]').click();
+    .on('click', function() {
+      $('input[name=retired]').trigger('click');
     });
   $checkboxLabel.prepend($checkbox).append($checkboxSpan);
   $checkboxCol.append($checkboxLabel);
