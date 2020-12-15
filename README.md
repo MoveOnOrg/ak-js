@@ -39,16 +39,7 @@ Uses "randomize-options" and "option" classes to randomize the order of elements
 * Randomized options are in container `.randomized-options`
 * Each option is `.option`
 
-## retired_checkbox.js
-
-Adds checkbox that hides employer and occupation inputs, pre-fills with "Retired" when checked.
-
-### Assumptions
-
-* Using jQuery
-* Employer and occupation inputs are in container `#employer-occupation-info`
-
-## validate_cc.js
+# validate_cc.js
 
 Uses included ccvalidator.js to display credit card type and validation.
 
