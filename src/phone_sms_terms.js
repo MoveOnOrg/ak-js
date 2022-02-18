@@ -71,19 +71,31 @@ var showSmsOptIn = function() {
   $(SMS_SUBSCRIBE_DIV).removeClass('d-none');
 }
 
+var validateSmsOptIn = function() {
+  var sms_opt_in_required = ($(SMS_SUBSCRIBE_DIV).attr('data-smsrequired') || '') === 'sms_opt_in_required';
+  var mobile_subscribe = $('#id_sms_subscribed', SMS_SUBSCRIBE_DIV).prop('checked');
+
+  if (!actionkit.errors) {
+    actionkit.errors = {};
+  }
+  if (sms_opt_in_required && !mobile_subscribe) {
+    actionkit.errors[SMS_SUB_ERR_KEY] = 'Please agree to the SMS terms by checking the box.';
+  }
+  else {
+    if (actionkit.errors.hasOwnProperty(SMS_SUB_ERR_KEY)) {
+      delete actionkit.errors[SMS_SUB_ERR_KEY];
+    }
+  }
+}
+
 // onCHANGE
 $('input[name=phone],input[name=mobile_phone]')
   .on('change unfocus', mobilePhoneUpdate)
   .each(mobilePhoneUpdate);
 
-  $('input[name=user_sms_subscribed]')
-  .on('change', function() {
-    if (actionkit.errors) {
-      if (actionkit.errors.hasOwnProperty(SMS_SUB_ERR_KEY)) {
-        delete actionkit.errors[SMS_SUB_ERR_KEY];
-      }
-    }
-  });
+// onCHANGE
+$('#id_sms_subscribed')
+  .on('change', validateSmsOptIn);
 
 //onINPUT
 $('input[name=phone].fast-sms-opt-in')
@@ -100,14 +112,8 @@ $('form[name=act]').on('actionkitbeforevalidation', function() {
   mobile = mobile.replace(/\D/g, '');
   var phonemobile = ($(SMS_SUBSCRIBE_DIV).attr('data-phonemobile') || '');
   var email_required = /opt-out-require-email/.test(phonemobile);
-  var sms_opt_in_required = ($(SMS_SUBSCRIBE_DIV).attr('data-smsrequired') || '') === 'sms_opt_in_required';
-
-  if (sms_opt_in_required && !mobile_subscribe) {
-    if (!actionkit.errors) {
-      actionkit.errors = {};
-    }
-    actionkit.errors[SMS_SUB_ERR_KEY] = 'Please agree to the SMS terms by checking the box.';
-  }
+  
+  validateSmsOptIn();
 
   if (mobile_subscribe && mobile && mobile.length >= 10) {
     if (window.console) {console.log('in mobile pathway, before validation');}
@@ -131,14 +137,8 @@ $('form.external-ak').on('submit', function() {
   var mobile_subscribe = $('#id_sms_subscribed', SMS_SUBSCRIBE_DIV).prop('checked');
   var phonemobile = ($(SMS_SUBSCRIBE_DIV).attr('data-phonemobile') || '');
   var email_required = /opt-out-require-email/.test(phonemobile);
-  var sms_opt_in_required = ($(SMS_SUBSCRIBE_DIV).attr('data-smsrequired') || '') === 'sms_opt_in_required';
 
-  if (sms_opt_in_required && !mobile_subscribe) {
-    if (!actionkit.errors) {
-      actionkit.errors = {};
-    }
-    actionkit.errors[SMS_SUB_ERR_KEY] = 'Please agree to the SMS terms by checking the box.';
-  }
+  validateSmsOptIn();
 
   if (mobile_subscribe && mobile && mobile.length >= 10) {
     if ($('#id_email').val() === '' && !email_required) {
