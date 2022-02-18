@@ -12,6 +12,7 @@
     - opt-out
     - opt-out-email-optional
     - opt-out-email-hidden
+    - opt-out-require-email
 
   TO CONSIDER:
     * should I implement this with EmailSuggestion (see donate form)
@@ -19,6 +20,7 @@
 */
 
 var SMS_SUBSCRIBE_DIV = '#id_subscribe_sms';
+var SMS_SUB_ERR_KEY = 'sms_subscribed:invalid';
 
 //onLOAD
 (function() {
@@ -61,15 +63,31 @@ var mobilePhoneUpdate = function() {
       $('#id_sms_subscribed').prop('checked', true);
       $('#id_sms_subscribed').val('sms_subscribed');
     }
-    $(SMS_SUBSCRIBE_DIV).show(); //todo: css for slide down
+    showSmsOptIn();
   }
 }
 
-//onCHANGE
+var showSmsOptIn = function() {
+  $(SMS_SUBSCRIBE_DIV).removeClass('d-none');
+}
+
+// onCHANGE
 $('input[name=phone],input[name=mobile_phone]')
   .on('change unfocus', mobilePhoneUpdate)
   .each(mobilePhoneUpdate);
 
+//onINPUT
+$('input[name=phone].fast-sms-opt-in')
+  .on('input', showSmsOptIn);
+
+$('input[name=user_sms_subscribed]')
+  .on('click', function() {
+    if (actionkit.errors) {
+      if (actionkit.errors.hasOwnProperty(SMS_SUB_ERR_KEY)) {
+        delete actionkit.errors[SMS_SUB_ERR_KEY];
+      }
+    }
+  });
 
 //onSUBMIT
 $('form[name=act]').on('actionkitbeforevalidation', function() {
@@ -80,10 +98,21 @@ $('form[name=act]').on('actionkitbeforevalidation', function() {
     mobile = '';
   }
   mobile = mobile.replace(/\D/g, '');
+  var sms_opt_in_required = ($(SMS_SUBSCRIBE_DIV).attr('data-smsrequired') || '') === 'sms_opt_in_required';
+
+  if (sms_opt_in_required && !mobile_subscribe) {
+    if (!actionkit.errors) {
+      actionkit.errors = {};
+    }
+    actionkit.errors[SMS_SUB_ERR_KEY] = 'Please agree to the SMS terms by checking the box.';
+  }
+
+  var phonemobile = ($(SMS_SUBSCRIBE_DIV).attr('data-phonemobile') || '');
+  var email_required = /opt-out-require-email/.test(phonemobile);
 
   if (mobile_subscribe && mobile && mobile.length >= 10) {
     if (window.console) {console.log('in mobile pathway, before validation');}
-    if ($('#id_email').val() === '') {
+    if ($('#id_email').val() === '' && !email_required) {
       $('#id_suppress_subscribe').val('1');
       $('#id_email').val(mobile+'-smssubscriber@example.com');
       $('#id_email_box').hide();
@@ -101,9 +130,19 @@ $('form[name=act]').on('actionkitbeforevalidation', function() {
 $('form.external-ak').on('submit', function() {
   var mobile = $('input[name=phone],input[name=mobile_phone]').val().replace(/\D/g, '');
   var mobile_subscribe = $('#id_sms_subscribed', SMS_SUBSCRIBE_DIV).prop('checked');
+  var phonemobile = ($(SMS_SUBSCRIBE_DIV).attr('data-phonemobile') || '');
+  var email_required = /opt-out-require-email/.test(phonemobile);
+  var sms_opt_in_required = ($(SMS_SUBSCRIBE_DIV).attr('data-smsrequired') || '') === 'sms_opt_in_required';
+
+  if (sms_opt_in_required && !mobile_subscribe) {
+    if (!actionkit.errors) {
+      actionkit.errors = {};
+    }
+    actionkit.errors[SMS_SUB_ERR_KEY] = 'Please agree to the SMS terms by checking the box.';
+  }
 
   if (mobile_subscribe && mobile && mobile.length >= 10) {
-    if ($('#id_email').val() === '') {
+    if ($('#id_email').val() === '' && !email_required) {
       $('#id_suppress_subscribe').val('1');
       $('#id_email').val(mobile+'-smssubscriber@example.com');
       $('#id_email_box').hide();
