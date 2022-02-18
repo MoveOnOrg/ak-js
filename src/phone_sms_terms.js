@@ -59,7 +59,7 @@ var SMS_SUB_ERR_KEY = 'sms_subscribed:invalid';
 var mobilePhoneUpdate = function() {
   if ($(this).val().replace(/\D/g, '').length >= 10) {
     var phonemobile = ($(SMS_SUBSCRIBE_DIV).attr('data-phonemobile') || '');
-    if (/opt-out/.test(phonemobile)) {
+    if (/opt-out/.test(phonemobile) && !/opt-out-require-email/.test(phonemobile)) {
       $('#id_sms_subscribed').prop('checked', true);
       $('#id_sms_subscribed').val('sms_subscribed');
     }
@@ -76,18 +76,18 @@ $('input[name=phone],input[name=mobile_phone]')
   .on('change unfocus', mobilePhoneUpdate)
   .each(mobilePhoneUpdate);
 
-//onINPUT
-$('input[name=phone].fast-sms-opt-in')
-  .on('input', showSmsOptIn);
-
-$('input[name=user_sms_subscribed]')
-  .on('click', function() {
+  $('input[name=user_sms_subscribed]')
+  .on('change', function() {
     if (actionkit.errors) {
       if (actionkit.errors.hasOwnProperty(SMS_SUB_ERR_KEY)) {
         delete actionkit.errors[SMS_SUB_ERR_KEY];
       }
     }
   });
+
+//onINPUT
+$('input[name=phone].fast-sms-opt-in')
+  .on('input', showSmsOptIn);
 
 //onSUBMIT
 $('form[name=act]').on('actionkitbeforevalidation', function() {
@@ -98,6 +98,8 @@ $('form[name=act]').on('actionkitbeforevalidation', function() {
     mobile = '';
   }
   mobile = mobile.replace(/\D/g, '');
+  var phonemobile = ($(SMS_SUBSCRIBE_DIV).attr('data-phonemobile') || '');
+  var email_required = /opt-out-require-email/.test(phonemobile);
   var sms_opt_in_required = ($(SMS_SUBSCRIBE_DIV).attr('data-smsrequired') || '') === 'sms_opt_in_required';
 
   if (sms_opt_in_required && !mobile_subscribe) {
@@ -106,9 +108,6 @@ $('form[name=act]').on('actionkitbeforevalidation', function() {
     }
     actionkit.errors[SMS_SUB_ERR_KEY] = 'Please agree to the SMS terms by checking the box.';
   }
-
-  var phonemobile = ($(SMS_SUBSCRIBE_DIV).attr('data-phonemobile') || '');
-  var email_required = /opt-out-require-email/.test(phonemobile);
 
   if (mobile_subscribe && mobile && mobile.length >= 10) {
     if (window.console) {console.log('in mobile pathway, before validation');}
