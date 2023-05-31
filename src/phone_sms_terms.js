@@ -55,6 +55,15 @@ var SMS_SUBSCRIBE_DIV = '#id_subscribe_sms';
 })();
 
 var mobilePhoneUpdate = function() {
+    // if #id_subscribe_sms is not next to #fieldbox-phone then move it
+    if ($('#fieldbox-phone').siblings(SMS_SUBSCRIBE_DIV).length != 1) {
+      $('#fieldbox-phone').parent().append($(SMS_SUBSCRIBE_DIV));
+      // There's a weird bug where the checkbox also isn't present for a recognized AKID; add it back in if it's missing
+      if ($('#id_sms_subscribed').length == 0) {
+        $(SMS_SUBSCRIBE_DIV).prepend('<input id="id_sms_subscribed" type="checkbox" name="user_sms_subscribed"></input>')
+      }
+    }
+
   if ($(this).val().replace(/\D/g, '').length >= 10) {
     var phonemobile = ($(SMS_SUBSCRIBE_DIV).attr('data-phonemobile') || '');
     if (/opt-out/.test(phonemobile)) {
