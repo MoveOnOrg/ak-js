@@ -12,6 +12,7 @@
     - opt-out
     - opt-out-email-optional
     - opt-out-email-hidden
+    - always-hide
 
   TO CONSIDER:
     * should I implement this with EmailSuggestion (see donate form)
@@ -70,7 +71,12 @@ var mobilePhoneUpdate = function() {
       $('#id_sms_subscribed').prop('checked', true);
       $('#id_sms_subscribed').val('sms_subscribed');
     }
-    $(SMS_SUBSCRIBE_DIV).show(); //todo: css for slide down
+    if ((/always-hide/).test(phonemobile)) {
+      $('#id_sms_subscribed').prop('checked', false);
+      $(SMS_SUBSCRIBE_DIV).hide();
+    } else {
+      $(SMS_SUBSCRIBE_DIV).show(); //todo: css for slide down
+    }
   }
 }
 
